@@ -1,9 +1,7 @@
-package Cribbage;
+package Cards;
 
 import java.util.ArrayList;
 
-import Cards.Card;
-import Cards.Deck;
 
 public class Hand {
 	ArrayList<Card> hand;

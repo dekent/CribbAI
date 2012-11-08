@@ -8,6 +8,9 @@ import static Cards.Card.suits.*;
 public class Deck {
 	private ArrayList<Card> deck;
 	
+	/**
+	 * Constructor to initialize a standard 52 card deck
+	 */
 	public Deck()
 	{
 		deck = new ArrayList<Card>();
@@ -36,6 +39,9 @@ public class Deck {
 		}
 	}
 
+	/**
+	 * Randomly reorders the deck
+	 */
 	public void shuffle()
 	{
 		Random rand = new Random();
@@ -51,20 +57,49 @@ public class Deck {
 		deck = newDeck;
 	}
 	
+	/**
+	 * Returns the card on top of the deck and removes it from the deck
+	 * 
+	 * @return the top card of the deck
+	 */
 	public Card drawCard()
 	{
-		Random rand = new Random();
-		int index = rand.nextInt(this.size());
-		Card c = deck.get(index);
-		deck.remove(index);
-		return c;
+		if (deck.size() > 0)
+		{
+			Card c = deck.get(0);
+			deck.remove(0);
+			return c;
+		}
+		else
+			return null;
 	}
 	
+	/**
+	 * Adds a specified card to the bottom of the deck
+	 * 
+	 * @param c the card to add to the deck
+	 */
 	public void addToDeck(Card c)
 	{
 		deck.add(c);
 	}
 	
+	/**
+	 * Removes the first occurrence of a specified card from the deck
+	 * 
+	 * @param c the card to remove from the deck
+	 */
+	public void removeFromDeck(Card c)
+	{
+		deck.remove(c);
+	}
+	
+	/**
+	 * Reorder the deck by "cutting" it at a set index and swapping the set of cards before the cut point
+	 * with the set of cards after the cut point
+	 * 
+	 * @param index the cut index
+	 */
 	@SuppressWarnings("unchecked")
 	public void cut(int index)
 	{
@@ -77,11 +112,21 @@ public class Deck {
 		}
 	}
 	
+	/**
+	 * Get the size of the deck in cards
+	 * 
+	 * @return the number of cards in the deck
+	 */
 	public int size()
 	{
 		return deck.size();
 	}
 	
+	/**
+	 * Generate a string based on the contents of the deck
+	 * 
+	 * @return a string representation of the deck
+	 */
 	public String toString()
 	{
 		String str = "";
@@ -94,6 +139,9 @@ public class Deck {
 		return str;
 	}
 	
+	/**
+	 * Test method
+	 */
 	public static void main(String[] args)
 	{
 		Deck d = new Deck();

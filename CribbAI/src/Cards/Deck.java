@@ -3,7 +3,7 @@ package Cards;
 import java.util.ArrayList;
 import java.util.Random;
 
-import static Cards.Card.suits.*;
+import static Cards.Card.Suit.*;
 
 public class Deck {
 	private ArrayList<Card> deck;

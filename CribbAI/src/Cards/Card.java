@@ -1,13 +1,13 @@
 package Cards;
 
-import static Cards.Card.suits.*;
+import static Cards.Card.Suit.*;
 
-public class Card {	
-	public enum suits {
+public class Card implements Comparable<Card>{	
+	public enum Suit {
 		hearts, diamonds, clubs, spades
 	}
 	
-	public suits suit;
+	public Suit suit;
 	public int rank;
 	
 	/**
@@ -16,7 +16,7 @@ public class Card {
 	 * @param s the suit of the card (hearts, diamonds, clubs, spades)
 	 * @param r the rank of the card (1-13:ace-king)
 	 */
-	public Card(suits s, int r)
+	public Card(Suit s, int r)
 	{
 		suit = s;
 		rank = r;
@@ -41,6 +41,19 @@ public class Card {
         else
         	return false;
     }
+	
+	/**
+	 * Returns the point value of a card (follows cribbage rules, override this for other scoring systems)
+	 * 
+	 * @return the point value of a card
+	 */
+	public int getCardValue()
+	{
+		if (this.rank > 10)
+			return 10;
+		else
+			return this.rank;
+	}
 	
 	/**
 	 * Converts the suit into a string for printing
@@ -86,5 +99,15 @@ public class Card {
 	public String toString()
 	{
 		return this.getRankString() + this.getSuitString();
+	}
+
+	@Override
+	public int compareTo(Card o) {
+		if (this.rank < o.rank)
+			return -1;
+		else if (this.rank > o.rank)
+			return 1;
+		else
+			return this.getSuitString().compareTo(o.getSuitString());
 	}
 }

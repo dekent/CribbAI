@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 
 public class Hand {
-	ArrayList<Card> hand;
+	public ArrayList<Card> hand;
 	
 	/**
 	 * Constructor to initialize an empty hand
@@ -72,6 +72,14 @@ public class Hand {
 	}
 	
 	/**
+	 * Sorts cards by their suit
+	 */
+	public void sortBySuit()
+	{
+		
+	}
+	
+	/**
 	 * Return a copy of a hand
 	 * 
 	 * @return a copy of this object
@@ -80,5 +88,25 @@ public class Hand {
 	{
 		Hand h = new Hand(this.hand);
 		return h;
+	}
+	
+	/**
+	 * Getter for the ArrayList containing the cards
+	 * 
+	 * @return the ArrayList of cards
+	 */
+	public ArrayList<Card> getCards()
+	{
+		return hand;
+	}
+	
+	/**
+	 * Get the number of cards in the hand
+	 * 
+	 * @return the number of cards in the hand
+	 */
+	public int size()
+	{
+		return hand.size();
 	}
 }

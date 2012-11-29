@@ -11,32 +11,45 @@ public class Deck {
 	/**
 	 * Constructor to initialize a standard 52 card deck
 	 */
-	public Deck()
+	public Deck(boolean initialize)
 	{
 		deck = new ArrayList<Card>();
-		Random rand = new Random();
-		
-		for (int i = 0; i < 52; i ++)
+		if (initialize)
 		{
-			Card tempCard;
-			do
-			{
-				int rank = rand.nextInt(13) + 1;
-				int suit = rand.nextInt(4);
+			Random rand = new Random();
 			
-				if (suit == 0)
-					tempCard = new Card(hearts, rank);
-				else if (suit == 1)
-					tempCard = new Card(diamonds, rank);
-				else if (suit == 2)
-					tempCard = new Card(clubs, rank);
-				else
-					tempCard = new Card(spades, rank);
-			}
-			while (deck.contains(tempCard));
+			for (int i = 0; i < 52; i ++)
+			{
+				Card tempCard;
+				do
+				{
+					int rank = rand.nextInt(13) + 1;
+					int suit = rand.nextInt(4);
 				
-			deck.add(tempCard);
+					if (suit == 0)
+						tempCard = new Card(hearts, rank);
+					else if (suit == 1)
+						tempCard = new Card(diamonds, rank);
+					else if (suit == 2)
+						tempCard = new Card(clubs, rank);
+					else
+						tempCard = new Card(spades, rank);
+				}
+				while (deck.contains(tempCard));
+					
+				deck.add(tempCard);
+			}
 		}
+	}
+	
+	public Deck copy()
+	{
+		Deck d = new Deck(false);
+		for (int i = 0; i < this.size(); i ++)
+		{
+			d.addToDeck(this.deck.get(i));
+		}
+		return d;
 	}
 
 	/**
@@ -75,12 +88,13 @@ public class Deck {
 	}
 	
 	/**
-	 * Adds a specified card to the bottom of the deck
+	 * Adds a specified card to a random position in the deck
 	 * 
 	 * @param c the card to add to the deck
 	 */
 	public void addToDeck(Card c)
 	{
+		//TODO: make this random
 		deck.add(c);
 	}
 	
@@ -144,7 +158,7 @@ public class Deck {
 	 */
 	public static void main(String[] args)
 	{
-		Deck d = new Deck();
+		Deck d = new Deck(true);
 		for (int i = 0; i < 47; i ++)
 			System.out.println(d.drawCard().toString());
 		System.out.println("Deck after draw:");

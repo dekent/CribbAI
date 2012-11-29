@@ -12,14 +12,16 @@ public class ScoreEvaluator {
 	@SuppressWarnings("unchecked")
 	public static int evaluateHand(Hand h, Card c)
 	{
+		Hand hCopy = h.copy();
+		
 		int score = 0;
 		
-		if (h.size() != 4)
+		if (hCopy.size() != 4)
 			return score;
 		
 		//Check for flush
 		boolean flush = true;
-		ArrayList<Card> cardSet = h.getCards();
+		ArrayList<Card> cardSet = hCopy.getCards();
 		Suit flushSuit = cardSet.get(0).suit;
 		for (int i = 1; i < cardSet.size(); i ++)
 		{

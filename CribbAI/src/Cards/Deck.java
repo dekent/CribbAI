@@ -94,7 +94,7 @@ public class Deck {
 	 */
 	public void addToDeck(Card c)
 	{
-		//TODO: make this random
+		//TODO: make this random 
 		deck.add(c);
 	}
 	

@@ -113,6 +113,22 @@ public class Card implements Comparable<Card>{
 		return index + rank - 1;
 	}
 	
+	public static Card getCardFromIndex(int i)
+	{
+		Card c = new Card(diamonds, 1);
+		
+		c.rank = i % 13 + 1;
+		
+		if (i >= 13 && i < 26)
+			c.suit = clubs;
+		else if (i >= 26 && i < 39)
+			c.suit = spades;
+		else if (i >= 39)
+			c.suit = hearts;
+		
+		return c;
+	}
+	
 	@Override
 	public int compareTo(Card o) {
 		if (this.rank < o.rank)

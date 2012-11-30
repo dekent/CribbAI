@@ -9,6 +9,20 @@ import Cards.Card.Suit;
 import static Cards.Card.Suit.*;
 
 public class ScoreEvaluator {
+	
+
+	public static void probabilityCheck()
+	{
+		double a=0;
+		double b=0;
+		for (int i = 0; i < CribbageGame.dealProbabilities.length; i++)
+		{
+			a += CribbageGame.dealProbabilities[i];
+			b += CribbageGame.nonDealProbabilities[i];
+		}
+		System.out.println(a + ", " + b);
+	}
+	
 	@SuppressWarnings("unchecked")
 	public static int evaluateHand(Hand h, Card c)
 	{
@@ -59,6 +73,24 @@ public class ScoreEvaluator {
 			if (i > 0 && cardSet.get(i).rank - cardSet.get(i-1).rank != 1)
 				strait = false;
 		}
+		//handle ace special case in strait calculation
+		if (!strait && cardSet.get(0).rank == 1)
+		{
+			strait = true;
+			while (cardSet.get(0).rank == 1)
+			{
+				cardSet.add(cardSet.get(0));
+				cardSet.remove(0);
+			}
+			for (int i = 0; i < cardSet.size(); i ++)
+			{
+				int cardRank = cardSet.get(i).rank;
+				if (cardSet.get(i).rank == 1)
+					cardRank = 14;
+				if (i > 0 && cardRank - cardSet.get(i-1).rank != 1)
+					strait = false;
+			}
+		}
 		if (strait)
 		{
 			score += 5;
@@ -70,6 +102,7 @@ public class ScoreEvaluator {
 		strait = true;
 		sum = 0;
 		
+		Collections.sort(cardSet);
 		//Check points for subsets of 4 cards (straits, 15s)
 		for (int i = 0; i < cardSet.size(); i ++)
 		{
@@ -81,6 +114,28 @@ public class ScoreEvaluator {
 				sum += cardSubset.get(j).getCardValue();
 				if (!fiveStraitFound && j > 0 && cardSubset.get(j).rank - cardSubset.get(j-1).rank != 1)
 					strait = false;
+			}
+			//handle ace special case in strait calculation
+			if (!strait && !fiveStraitFound && cardSubset.get(0).rank == 1)
+			{
+				strait = true;
+				int count = 0;
+				while (cardSubset.get(0).rank == 1)
+				{
+					cardSubset.add(cardSubset.get(0));
+					cardSubset.remove(0);
+					count ++;
+					if (count > 4)
+						break;
+				}
+				for (int j = 0; j < cardSubset.size(); j ++)
+				{
+					int cardRank = cardSubset.get(j).rank;
+					if (cardSubset.get(j).rank == 1)
+						cardRank = 14;
+					if (j > 0 && cardRank - cardSubset.get(j-1).rank != 1)
+						strait = false;
+				}
 			}
 			if (!fiveStraitFound && strait)
 			{
@@ -94,6 +149,7 @@ public class ScoreEvaluator {
 			sum = 0;
 		}
 		
+		Collections.sort(cardSet);
 		//Check points for subsets of 3 cards (straits, 15s) and 2 cards (15s, pairs)
 		for (int i = 0; i < cardSet.size() - 1; i ++)
 		{
@@ -108,6 +164,28 @@ public class ScoreEvaluator {
 					sum += cardSubset.get(k).getCardValue();
 					if (!fiveStraitFound && !fourStraitFound && k > 0 && cardSubset.get(k).rank - cardSubset.get(k-1).rank != 1)
 						strait = false;
+				}
+				//handle ace special case in strait calculation
+				if (!strait && !fiveStraitFound && !fourStraitFound && cardSubset.get(0).rank == 1)
+				{
+					strait = true;
+					int count = 0;
+					while (cardSubset.get(0).rank == 1)
+					{
+						cardSubset.add(cardSubset.get(0));
+						cardSubset.remove(0);
+						count ++;
+						if (count == 3)
+							break;
+					}
+					for (int k = 0; k < cardSubset.size(); k ++)
+					{
+						int cardRank = cardSubset.get(k).rank;
+						if (cardSubset.get(k).rank == 1)
+							cardRank = 14;
+						if (k > 0 && cardRank - cardSubset.get(k-1).rank != 1)
+							strait = false;
+					}
 				}
 				if (!fiveStraitFound && !fourStraitFound && strait)
 					score += 3;

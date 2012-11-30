@@ -42,6 +42,11 @@ public class Deck {
 		}
 	}
 	
+	public ArrayList<Card> getDeckCards()
+	{
+		return deck;
+	}
+	
 	public Deck copy()
 	{
 		Deck d = new Deck(false);

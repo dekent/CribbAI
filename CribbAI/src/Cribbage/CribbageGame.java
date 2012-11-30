@@ -1,6 +1,7 @@
 package Cribbage;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import Cards.Card;
 import Cards.Deck;
@@ -8,6 +9,9 @@ import Cards.Hand;
 import Cards.Card.Suit;
 
 public class CribbageGame {
+	static double[] dealProbabilities = {0.0153, 0.0227, 0.0208, 0.0153, 0.0122, 0.0212, 0.0265, 0.0248, 0.0215, 0.0145, 0.017, 0.0167, 0.0159, 0.0185, 0.0205, 0.0211, 0.0134, 0.0169, 0.0191, 0.0267, 0.0231, 0.0212, 0.0146, 0.0169, 0.0187, 0.0164, 0.0205, 0.0213, 0.0212, 0.0147, 0.0165, 0.0194, 0.0254, 0.0262, 0.0178, 0.0154, 0.0156, 0.0162, 0.019, 0.0214, 0.0207, 0.0195, 0.0176, 0.0146, 0.0203, 0.0254, 0.0263, 0.0224, 0.0176, 0.0185, 0.0183, 0.0167};
+	static double[] nonDealProbabilities = {0.0169, 0.0228, 0.0188, 0.0155, 0.0011, 0.0161, 0.0214, 0.0203, 0.0221, 0.0228, 0.0154, 0.0236, 0.0285, 0.0223, 0.021, 0.016, 0.0163, 0.0022, 0.0156, 0.0216, 0.0182, 0.0215, 0.0238, 0.0163, 0.0241, 0.0317, 0.0212, 0.0215, 0.0179, 0.0153, 0.0015, 0.0147, 0.0226, 0.022, 0.0192, 0.0259, 0.015, 0.0212, 0.0292, 0.0224, 0.0202, 0.0187, 0.0169, 0.0024, 0.0136, 0.021, 0.0212, 0.0227, 0.026, 0.018, 0.0232, 0.0306};
+	
 	public static Card[] selectDiscard(Hand h, int playerScore, int opponentScore, boolean dealing)
 	{
 		Card[] discardCards = new Card[2];
@@ -51,8 +55,10 @@ public class CribbageGame {
 					int iterations = 100;
 					for (int k = 0; k < iterations; k ++)
 					{
-						Card c1 = cribDeck.drawCard();
-						Card c2 = cribDeck.drawCard();
+						Card c1 = CribbageGame.drawCardWithProbability(!dealing, cribDeck);
+						cribDeck.removeFromDeck(c1);
+						Card c2 = CribbageGame.drawCardWithProbability(!dealing, cribDeck);
+						cribDeck.removeFromDeck(c2);
 						
 						cribHand.addCard(c1);
 						cribHand.addCard(c2);
@@ -117,6 +123,46 @@ public class CribbageGame {
 	public static Card determinePeggingMove(ArrayList<Card> peggingStack, Hand hand)
 	{
 		Card c = new Card(Suit.clubs,1);
+		
+		return c;
+	}
+	
+	public static Card drawCardWithProbability(boolean dealing, Deck d)
+	{
+		Card c = new Card(Suit.clubs, 1);
+		Random rand = new Random();
+		double value;
+		double count;
+		
+		do 
+		{
+			value = rand.nextInt(1000) / 1000.0;
+			count = 0.0;
+			if (dealing)
+			{
+				for (int i = 0; i < dealProbabilities.length; i++)
+				{
+					count += dealProbabilities[i];
+					if (value <= count)
+					{
+						c = Card.getCardFromIndex(i);
+						break;
+					}
+				}
+			}
+			else
+			{
+				for (int i = 0; i < nonDealProbabilities.length; i++)
+				{
+					count += nonDealProbabilities[i];
+					if (value <= count)
+					{
+						c = Card.getCardFromIndex(i);
+						break;
+					}
+				}
+			}
+		} while (!d.getDeckCards().contains(c));
 		
 		return c;
 	}

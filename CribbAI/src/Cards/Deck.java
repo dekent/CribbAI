@@ -94,8 +94,13 @@ public class Deck {
 	 */
 	public void addToDeck(Card c)
 	{
-		Random rand = new Random();
-		deck.add(rand.nextInt(deck.size()), c);
+		if (deck.size() == 0)
+			deck.add(c);
+		else
+		{
+			Random rand = new Random();
+			deck.add(rand.nextInt(deck.size()), c);
+		}
 	}
 	
 	/**

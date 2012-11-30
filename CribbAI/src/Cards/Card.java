@@ -101,6 +101,18 @@ public class Card implements Comparable<Card>{
 		return this.getRankString() + this.getSuitString();
 	}
 
+	public int getCardIndex()
+	{
+		int index = 0;
+		if (suit == clubs)
+			index = 13;
+		else if (suit == spades)
+			index = 26;
+		else if (suit == hearts)
+			index = 39;
+		return index + rank - 1;
+	}
+	
 	@Override
 	public int compareTo(Card o) {
 		if (this.rank < o.rank)

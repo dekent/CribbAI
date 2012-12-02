@@ -212,6 +212,59 @@ public class ScoreEvaluator {
 	{
 		int score = 0;
 		
+		Card top = cards.get(cards.size()-1);
+		
+		//pairs
+		int pairDepthCount = 0;
+		for (int i = cards.size()-2; i >= 0; i--)
+		{
+			if (cards.get(i).rank == top.rank)
+				pairDepthCount++;
+			else
+				break;
+		}
+		if (pairDepthCount == 1)
+			score += 2;
+		else if (pairDepthCount > 1)
+			score += 6 * (pairDepthCount - 1);
+		
+		//count for 15 and 31
+		int count = 0;
+		for (int i = 0; i < cards.size(); i++)
+			count += cards.get(i).getCardValue();
+		
+		if (count == 15 || count == 31)
+			score += 2;
+		
+		//runs
+		int runCount = 1;
+		int topCardValue = top.rank;
+		if (top.rank == 1)
+			topCardValue = 14;
+		int difference = 1;
+		for (int i = cards.size() - 2; i >= 0; i --)
+		{
+			if (topCardValue - cards.get(i).rank == difference)
+				runCount ++;
+			else
+				break;
+			difference --;
+		}
+		if (runCount >= 3)
+			score += runCount;
+		
+		//flushes
+		int flushCount = 1;
+		for (int i = cards.size() - 2; i >= 0; i --)
+		{
+			if (cards.get(i).suit == top.suit)
+				flushCount ++;
+			else
+				break;
+		}
+		if (flushCount >= 4)
+			score += flushCount;
+		
 		return score;
 	}
 }

@@ -129,6 +129,50 @@ public class Card implements Comparable<Card>{
 		return c;
 	}
 	
+	public static Card getCardFromString(String str)
+	{
+		int rank;
+		Suit suit;
+		switch (str.charAt(0))
+		{
+		case 'A':
+			rank = 1;
+			break;
+		case 'T':
+			rank = 10;
+			break;
+		case 'J':
+			rank = 11;
+			break;
+		case 'Q':
+			rank = 12;
+			break;
+		case 'K':
+			rank = 13;
+			break;
+		default:
+			rank = Character.getNumericValue(str.charAt(0));
+			break;
+		}
+		switch (str.charAt(1))
+		{
+		case 'H':
+			suit = Suit.hearts;
+			break;
+		case 'D':
+			suit = Suit.diamonds;
+			break;
+		case 'C':
+			suit = Suit.clubs;
+			break;
+		default:
+			suit = Suit.spades;
+			break;
+		}
+		
+		return new Card(suit, rank);
+	}
+	
 	@Override
 	public int compareTo(Card o) {
 		if (this.rank < o.rank)

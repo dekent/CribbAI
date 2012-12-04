@@ -5,16 +5,18 @@ import java.util.ArrayList;
 import Cards.Card;
 import Cards.Deck;
 import Cards.Hand;
+import Cards.PeggingStack;
 import Cards.Card.Suit;
 
 public class CribbageTests {	
 	public static void main(String[] args)
 	{
 		CribbageTests tester = new CribbageTests();
-		//tester.testDiscard();
-		tester.learnDiscardProbability(5000);
+		tester.testDiscard();
+		//tester.learnDiscardProbability(5000);
 		//tester.testHandEvaluation();
 		//tester.testDrawWithProbability(5000);
+		//tester.testPeggingMove();
 		//ScoreEvaluator.probabilityCheck();
 	}
 	
@@ -37,21 +39,48 @@ public class CribbageTests {
 		System.out.println(ScoreEvaluator.evaluateHand(hand, card));
 	}
 	
+	public void testPeggingMove()
+	{
+		ArrayList<Card> cards = new ArrayList<Card>();
+		cards.add(new Card(Suit.clubs, 7));
+		cards.add(new Card(Suit.spades, 7));
+		PeggingStack stack = new PeggingStack(cards);
+		ArrayList<Card> handCards = new ArrayList<Card>();
+		handCards.add(new Card(Suit.diamonds, 7));
+		handCards.add(new Card(Suit.spades, 8));
+		handCards.add(new Card(Suit.spades, 12));
+		handCards.add(new Card(Suit.spades, 11));
+		Hand hand = new Hand(handCards);
+		System.out.println(CribbageGame.determinePeggingMove(stack, hand).toString());
+	}
+	
+	/*
+	public void testPeggingScore()
+	{
+		ArrayList<Card> cards = new ArrayList<Card>();
+		cards.add(new Card(Suit.clubs, 11));
+		cards.add(new Card(Suit.clubs, 12));
+		cards.add(new Card(Suit.clubs, 13));
+		cards.add(new Card(Suit.spades, 1));
+		
+		System.out.println(ScoreEvaluator.evaluatePeggingStack(cards));
+	}*/
+	
 	public void testDiscard()
 	{		
 		Deck deck = new Deck(true);
 		//Hand hand = new Hand(deck, 6);
 		Hand hand = new Hand();
-		hand.addCard(new Card(Suit.spades, 3));
-		hand.addCard(new Card(Suit.hearts, 4));
-		hand.addCard(new Card(Suit.clubs, 5));
-		hand.addCard(new Card(Suit.clubs, 10));
-		hand.addCard(new Card(Suit.spades, 10));
+		hand.addCard(new Card(Suit.diamonds, 3));
+		hand.addCard(new Card(Suit.spades, 6));
 		hand.addCard(new Card(Suit.clubs, 7));
+		hand.addCard(new Card(Suit.spades, 7));
+		hand.addCard(new Card(Suit.hearts, 11));
+		hand.addCard(new Card(Suit.hearts, 12));
 		
 		System.out.println(hand.getCards().toString());
 		
-		Card[] discard = CribbageGame.selectDiscard(hand, 0, 0, false);
+		Card[] discard = CribbageGame.selectDiscard(hand, 113, 103, false);
 		System.out.println("Discard:");
 		System.out.println(discard[0]);
 		System.out.println(discard[1]);

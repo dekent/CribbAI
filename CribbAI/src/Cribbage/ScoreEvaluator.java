@@ -248,7 +248,21 @@ public class ScoreEvaluator {
 				runCount ++;
 			else
 				break;
-			difference --;
+			difference ++;
+		}
+		if (runCount >= 3)
+			score += runCount;
+		
+		runCount = 1;
+		topCardValue = top.rank;
+		difference = 1;
+		for (int i = cards.size() - 2; i >= 0; i --)
+		{
+			if (-(topCardValue - cards.get(i).rank) == difference)
+				runCount ++;
+			else
+				break;
+			difference ++;
 		}
 		if (runCount >= 3)
 			score += runCount;

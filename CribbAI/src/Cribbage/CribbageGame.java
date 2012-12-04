@@ -1,16 +1,18 @@
 package Cribbage;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Random;
 
 import Cards.Card;
 import Cards.Deck;
 import Cards.Hand;
 import Cards.Card.Suit;
+import Cards.PeggingStack;
 
 public class CribbageGame {
-	static double[] dealProbabilities = {0.0153, 0.0227, 0.0208, 0.0153, 0.0122, 0.0212, 0.0265, 0.0248, 0.0215, 0.0145, 0.017, 0.0167, 0.0159, 0.0185, 0.0205, 0.0211, 0.0134, 0.0169, 0.0191, 0.0267, 0.0231, 0.0212, 0.0146, 0.0169, 0.0187, 0.0164, 0.0205, 0.0213, 0.0212, 0.0147, 0.0165, 0.0194, 0.0254, 0.0262, 0.0178, 0.0154, 0.0156, 0.0162, 0.019, 0.0214, 0.0207, 0.0195, 0.0176, 0.0146, 0.0203, 0.0254, 0.0263, 0.0224, 0.0176, 0.0185, 0.0183, 0.0167};
-	static double[] nonDealProbabilities = {0.0169, 0.0228, 0.0188, 0.0155, 0.0011, 0.0161, 0.0214, 0.0203, 0.0221, 0.0228, 0.0154, 0.0236, 0.0285, 0.0223, 0.021, 0.016, 0.0163, 0.0022, 0.0156, 0.0216, 0.0182, 0.0215, 0.0238, 0.0163, 0.0241, 0.0317, 0.0212, 0.0215, 0.0179, 0.0153, 0.0015, 0.0147, 0.0226, 0.022, 0.0192, 0.0259, 0.015, 0.0212, 0.0292, 0.0224, 0.0202, 0.0187, 0.0169, 0.0024, 0.0136, 0.021, 0.0212, 0.0227, 0.026, 0.018, 0.0232, 0.0306};
+	static double[] dealProbabilities = {0.0195, 0.021, 0.0206, 0.0175, 0.0168, 0.0184, 0.0216, 0.0232, 0.0199, 0.0157, 0.0144, 0.0164, 0.0194, 0.017, 0.0199, 0.0198, 0.0177, 0.015, 0.0196, 0.022, 0.0262, 0.0206, 0.0187, 0.0171, 0.0187, 0.0167, 0.0183, 0.0226, 0.0217, 0.0162, 0.016, 0.0192, 0.0237, 0.0237, 0.021, 0.016, 0.0155, 0.02, 0.0185, 0.0202, 0.0213, 0.0206, 0.0153, 0.0182, 0.0198, 0.025, 0.0256, 0.0203, 0.0163, 0.0159, 0.0176, 0.0181};
+	static double[] nonDealProbabilities = {0.0211, 0.0219, 0.0175, 0.016, 0.0023, 0.0141, 0.0204, 0.0219, 0.0203, 0.0239, 0.0157, 0.0197, 0.0338, 0.018, 0.0202, 0.0155, 0.0176, 0.0015, 0.0146, 0.0183, 0.0195, 0.0216, 0.0274, 0.0181, 0.0237, 0.0305, 0.0195, 0.0241, 0.0174, 0.0148, 0.0013, 0.0148, 0.0186, 0.021, 0.0237, 0.0242, 0.0154, 0.0248, 0.0303, 0.0222, 0.0226, 0.0183, 0.0151, 0.0013, 0.0165, 0.0195, 0.0204, 0.0221, 0.0251, 0.0173, 0.0231, 0.0315};
 	
 	public static Card[] selectDiscard(Hand h, int playerScore, int opponentScore, boolean dealing)
 	{
@@ -120,11 +122,232 @@ public class CribbageGame {
 		return discardCards;
 	}
 	
-	public static Card determinePeggingMove(ArrayList<Card> peggingStack, Hand hand)
+	/**
+	 * determinePeggingMove
+	 * 
+	 * Determines the best pegging move (card to play) during a given game state (the pegging stack and the player's hand).
+	 * The algorithm iterates through a set number of simulations for each card in the player's hand, assuming the opponent holds random cards.
+	 * 
+	 * @param	PeggingStack	peggingStack	the pegging stack, representing all cards played so far in the current phase
+	 * @param	Hand			hand			the player's hand
+	 * @return	Card							the card in the player's hand that represents the best pegging move
+	 */
+	public static Card determinePeggingMove(PeggingStack peggingStack, Hand hand)
 	{
-		Card c = new Card(Suit.clubs,1);
+		// If there is only one card in the player's hand, it represents the best (and only) pegging move.
+		if (hand.size() == 1)
+			return hand.getCards().get(0);
 		
-		return c;
+		// Initialize the card and utility representing the current best known pegging move.
+		Card bestCard = hand.getCards().get(0);
+		double maxUtility = -999;
+		
+		// Initialize the deck representing all unplayed cards by removing all known cards in the player's hand and the pegging stack.
+		Deck unplayedCards = new Deck(true);
+		for (int i = 0; i < hand.size(); i++)
+		{
+			unplayedCards.removeFromDeck(hand.getCards().get(i));
+		}
+		for (int i = 0; i < peggingStack.size(); i++)
+		{
+			unplayedCards.removeFromDeck(peggingStack.getCard(i));
+		}
+		
+		// Iterate through all cards in the player's hand to determine the best pegging move.
+		for (int i = 0; i < hand.size(); i++)
+		{
+			if (!(peggingStack.getCount() + hand.getCards().get(i).getCardValue() > 31))
+			{
+				double cardUtility = 0;
+				
+				// Perform a set number of pegging simulations that start with this card.
+				int iterations = 10000;
+				for (int j = 0; j < iterations; j++)
+				{
+					// Create temporary copies of the player's hand, the pegging stack, and the temporary deck.
+					Hand tempHand = hand.copy();
+					PeggingStack tempPeggingStack = peggingStack.copy();
+					Deck tempDeck = unplayedCards.copy();
+					
+					// Initialize the hand representing the opponent's cards (assumed random).
+					Hand opponentHand = new Hand();
+					for (int k = 0; k < 8 - peggingStack.size() - tempHand.size(); k++)
+					{
+						opponentHand.addCard(tempDeck.drawCard());
+					}
+					
+					// Simulate the first move using this card, adding any points it earns to its utility.
+					cardUtility += simulatePeggingMove(tempPeggingStack, tempHand, tempHand.getCards().get(i));
+					
+					// Initialize the variable that keeps track of whether it is the player's turn.
+					boolean playerTurn = false;
+					
+					// As long as there are remaining cards, simulate the play of random cards from the player's hand and the opponent's assumed hand.
+					while (tempHand.size() + opponentHand.size() > 0)
+					{
+						Random rand = new Random();
+						int cardIndex = 0;
+						
+						// If it's the player's turn, simulate a move with a random card in the player's hand, adding any points it earns to this card's utility . . .
+						if (playerTurn)
+						{
+							// Remove unplayable cards from consideration.
+							Hand playableHand = tempHand.copy();
+							for (int l = playableHand.size() - 1; l >= 0; l--)
+							{
+								if (tempPeggingStack.getCount() + playableHand.getCards().get(l).getCardValue() > 31)
+									playableHand.discardCard(l);
+							}
+							
+							// If the player has no playable cards, reset the coun		handCards.add(new Card(Suit.spades, 11));t and subtract one utility point for "One for the go" . . .
+							if (playableHand.size() == 0)
+							{
+								cardUtility -= 1;
+								tempPeggingStack.resetCount();
+							}
+							// . . . else, select a random card from all playable cards.
+							else
+							{
+								cardIndex = rand.nextInt(playableHand.size());
+								cardUtility += simulatePeggingMove(tempPeggingStack, tempHand, playableHand.getCards().get(cardIndex));
+							}
+							
+							// If neither the player nor the opponent have cards remaining, add one utility point for "One for last."
+							if (tempHand.size() + opponentHand.size() == 0)
+								cardUtility += 1;
+							
+							playerTurn = false;
+						}
+						// . . . else, simulate a move with a random card in the opponent's hand, subtracting any points it earns from this card's utility.
+						else
+						{
+							// Remove unplayable cards from consideration.
+							Hand playableHand = opponentHand.copy();
+							for (int l = playableHand.size() - 1; l >= 0; l--)
+							{
+								if (tempPeggingStack.getCount() + playableHand.getCards().get(l).getCardValue() > 31)
+									playableHand.discardCard(l);
+							}
+							
+							// If the opponent has no playable cards, reset the count and add utility for go . . .
+							if (playableHand.size() == 0)
+							{
+								cardUtility += 1;
+								tempPeggingStack.resetCount();
+							}
+							// . . . else, select a random card from all playable cards.
+							else
+							{
+								cardIndex = rand.nextInt(playableHand.size());
+								cardUtility -= simulatePeggingMove(tempPeggingStack, opponentHand, playableHand.getCards().get(cardIndex));
+							}
+							
+							// If neither the player nor the opponent have cards remaining, subtract one utility point for "One for last."
+							if (tempHand.size() + opponentHand.size() == 0)
+								cardUtility -= 1;
+							
+							playerTurn = true;
+						}
+					}
+					
+					tempHand = hand.copy();
+					tempPeggingStack = peggingStack.copy();
+					tempDeck = unplayedCards.copy();
+				}
+				// Normalize this card's utility based on the number of iterations.
+				cardUtility *= 1.0/(iterations);
+				
+				System.out.println("Utility: " + cardUtility);
+				
+				// If playing this card would yield the highest expected utility so far, consider it the best pegging move.
+				if (cardUtility > maxUtility)
+				{
+					maxUtility = cardUtility;
+					bestCard = hand.getCards().get(i);
+				}
+			}
+		}
+		
+		return bestCard;
+	}
+
+	/**
+	 * simulatePeggingMove
+	 * 
+	 * Simulates a round of the pegging phase by playing a given card from the given hand onto the given pegging stack.
+	 * The card, if played, is removed from the hand and added to the pegging stack.
+	 * The number of points scored is returned as the result.  If the card cannot be played because it would exceed a pegging stack total of 31, -1 is returned.
+	 * 
+	 * @param	PeggingStack	peggingStack	the pegging stack, representing all cards played so far in the current phase
+	 * @param	Hand			hand			the player's hand
+	 * @param	Card			card			the card to play from the player's hand
+	 * @return	int								the number of points scored by playing the card or -1 if the card cannot be played
+	 */
+	public static int simulatePeggingMove(PeggingStack peggingStack, Hand hand, Card card)
+	{
+		int pointsEarned = 0;
+		
+		// If the card would exceed the pegging stack total of 31, it cannot be played and the opponent would gain a point for "One for the go."
+		if (peggingStack.getCount() + card.getCardValue() > 31)
+			return -1;
+		
+		// If the played card brings the pegging stack count to 15 or 31, award 2 points.
+		if (peggingStack.getCount() + card.getCardValue() == 15 || peggingStack.getCount() + card.getCardValue() == 31)
+			pointsEarned += 2;
+		
+		// Check for points awarded by making a pair, three of a kind, or four of a kind.
+		if (peggingStack.size() > 0)
+		{
+			// If the played card makes a pair, award 2 points. 
+			if (peggingStack.getCard(peggingStack.size() - 1).rank == card.rank)
+			{
+				pointsEarned += 2;
+				if (peggingStack.size() > 1)
+				{
+					// If the played card makes three of a kind, award 4 more points (for a total of 6 from pairs). 
+					if (peggingStack.getCard(peggingStack.size() - 2).rank == card.rank)
+					{
+						pointsEarned += 4;
+						if (peggingStack.size() > 2)
+						{
+							// If the played card makes four of a kind, award 6 more points (for a total of 12 from pairs). 
+							if (peggingStack.getCard(peggingStack.size() - 3).rank == card.rank)
+								pointsEarned += 6;
+						}
+					}
+				}
+			}
+		}
+		
+		// Check for points awarded by forming a run of 3.
+		if (peggingStack.size() > 1)
+		{
+			// Create a temporary copy of the pegging stack.
+			PeggingStack tempPeggingStack = peggingStack.copy();
+			
+			// Add the top 2 cards of the pegging stack to a set of cards.
+			ArrayList<Card> cardSet = new ArrayList<Card>();
+			for (int i = tempPeggingStack.size() - 1; i >= tempPeggingStack.size() - 2; i--)
+			{
+				cardSet.add(tempPeggingStack.getCards().get(i));
+			}
+			
+			// Add the played card to the set.
+			cardSet.add(card);
+			
+			// Sort the three cards in the set.
+			Collections.sort(cardSet);
+			
+			//TODO: Determine if there is a run of 3.
+		}
+		
+		//TODO: Determine runs of other sizes.
+		
+		// Add the card to the pegging stack (and its count), then remove it from the player's hand.
+		peggingStack.addCard(card);
+		hand.discardCard(card);
+		
+		return pointsEarned;
 	}
 	
 	public static Card drawCardWithProbability(boolean dealing, Deck d)

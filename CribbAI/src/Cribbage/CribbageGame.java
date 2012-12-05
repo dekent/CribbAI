@@ -14,6 +14,15 @@ public class CribbageGame {
 	static double[] dealProbabilities = {0.0196, 0.0196, 0.0209, 0.013, 0.0155, 0.0179, 0.0233, 0.0266, 0.0207, 0.0146, 0.0172, 0.0192, 0.0177, 0.0172, 0.0208, 0.0189, 0.0183, 0.0167, 0.0189, 0.0237, 0.0252, 0.0203, 0.0184, 0.017, 0.0183, 0.0171, 0.0199, 0.0204, 0.0185, 0.0158, 0.0154, 0.0219, 0.0217, 0.023, 0.0221, 0.0186, 0.0167, 0.0191, 0.0164, 0.0183, 0.0212, 0.0214, 0.015, 0.0157, 0.02, 0.0246, 0.0226, 0.023, 0.0174, 0.0189, 0.0166, 0.0192};
 	static double[] nonDealProbabilities = {0.0199, 0.0202, 0.0168, 0.0133, 0.0017, 0.0169, 0.0179, 0.0212, 0.0191, 0.0227, 0.0175, 0.0244, 0.0301, 0.0193, 0.0216, 0.0159, 0.0151, 0.0012, 0.0143, 0.0209, 0.0227, 0.0203, 0.0269, 0.0163, 0.0226, 0.0309, 0.0224, 0.0227, 0.0163, 0.0173, 0.0015, 0.0165, 0.0197, 0.0198, 0.0212, 0.0277, 0.0164, 0.0248, 0.0327, 0.0203, 0.0203, 0.0177, 0.0146, 0.0014, 0.0166, 0.0189, 0.0177, 0.0225, 0.027, 0.0171, 0.0216, 0.0356};
 	
+	/**
+	 * Complete the discard phase of the game
+	 * 
+	 * @param h the player's hand
+	 * @param playerScore the player's current score
+	 * @param opponentScore the opponent's current score
+	 * @param dealing true if the player is dealing, false if the opponent is dealing
+	 * @return an array of 2 cards to discard
+	 */
 	public static Card[] selectDiscard(Hand h, int playerScore, int opponentScore, boolean dealing)
 	{
 		Card[] discardCards = new Card[2];
@@ -350,6 +359,12 @@ public class CribbageGame {
 		return pointsEarned;
 	}
 	
+	/**
+	 * 
+	 * @param dealing
+	 * @param d
+	 * @return
+	 */
 	public static Card drawCardWithProbability(boolean dealing, Deck d)
 	{
 		Card c = new Card(Suit.clubs, 1);

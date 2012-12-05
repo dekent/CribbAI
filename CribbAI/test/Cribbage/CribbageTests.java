@@ -13,10 +13,11 @@ public class CribbageTests {
 	{
 		CribbageTests tester = new CribbageTests();
 		//tester.testDiscard();
-		tester.learnDiscardProbability(5000);
+		//tester.learnDiscardProbability(5000);
+		//tester.learnKeepProbability(2500);
 		//tester.testHandEvaluation();
 		//tester.testDrawWithProbability(5000);
-		//tester.testPeggingMove();
+		tester.testPeggingMove();
 		//ScoreEvaluator.probabilityCheck();
 	}
 	
@@ -42,16 +43,17 @@ public class CribbageTests {
 	public void testPeggingMove()
 	{
 		ArrayList<Card> cards = new ArrayList<Card>();
-		cards.add(new Card(Suit.clubs, 7));
-		cards.add(new Card(Suit.spades, 7));
+		cards.add(new Card(Suit.clubs, 4));
+		cards.add(new Card(Suit.spades, 5));
+		cards.add(new Card(Suit.spades, 6));
 		PeggingStack stack = new PeggingStack(cards);
 		ArrayList<Card> handCards = new ArrayList<Card>();
 		handCards.add(new Card(Suit.diamonds, 7));
-		handCards.add(new Card(Suit.spades, 8));
-		handCards.add(new Card(Suit.spades, 12));
-		handCards.add(new Card(Suit.spades, 11));
+		handCards.add(new Card(Suit.clubs, 8));
+		handCards.add(new Card(Suit.spades, 10));
 		Hand hand = new Hand(handCards);
-		System.out.println(CribbageGame.determinePeggingMove(stack, hand).toString());
+		System.out.println(CribbageGame.determinePeggingMove(stack, hand, true).toString());
+		//System.out.println(CribbageGame.simulatePeggingMove(stack, hand, new Card(Suit.diamonds, 7)));
 	}
 	
 	/*
@@ -138,8 +140,8 @@ public class CribbageTests {
 			discard = CribbageGame.selectDiscard(hand, 0, 0, true);
 			hand.discardCard(discard[0]);
 			hand.discardCard(discard[1]);
-			for (int j = 0; i < keep.length; i++)
-				keep[i] = hand.getCards().get(j);
+			for (int j = 0; j < keep.length; j++)
+				keep[j] = hand.getCards().get(j);
 			probabilities[0][keep[0].getCardIndex()] ++;
 			probabilities[0][keep[1].getCardIndex()] ++;
 			probabilities[0][keep[2].getCardIndex()] ++;
@@ -149,6 +151,8 @@ public class CribbageTests {
 			discard = CribbageGame.selectDiscard(hand, 0, 0, false);
 			hand.discardCard(discard[0]);
 			hand.discardCard(discard[1]);
+			for (int j = 0; j < keep.length; j++)
+				keep[j] = hand.getCards().get(j);
 			probabilities[1][keep[0].getCardIndex()] ++;
 			probabilities[1][keep[1].getCardIndex()] ++;
 			probabilities[1][keep[2].getCardIndex()] ++;
